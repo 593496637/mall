@@ -1,12 +1,13 @@
 module.exports = {
+  productionSourceMap: false,
   configureWebpack: {
     resolve: {
       alias: {
-        'assets':'@/assets',
-        'common':'@/common',
-        'components':'@/components',
+        'assets': '@/assets',
+        'common': '@/common',
+        'components': '@/components',
         'network': '@/network',
-        'views':'@/views'
+        'views': '@/views'
       }
     }
   }

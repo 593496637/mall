@@ -1,8 +1,6 @@
 <template>
   <div class="wrapper" ref="wrapper">
-    <ul class="content">
-      <li v-for="item in 100" :key="item">{{item}}</li>
-    </ul>
+      <slot></slot>
   </div>
 </template>
 <script>
@@ -24,7 +22,7 @@ export default {
 </script>
 <style scoped>
 .wrapper {
-  height: 500px;
-  overflow: hidden;
+  border: 1px solid red;
 }
 </style>
+

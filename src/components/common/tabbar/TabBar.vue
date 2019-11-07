@@ -1,14 +1,12 @@
 <template>
-  <div>
-    <div class="tab-bar">
-      <slot/>
-    </div>
+  <div class="tab-bar">
+    <slot/>
   </div>
 </template>
 <script>
 export default {};
 </script>
-<style>
+<style scoped>
 .tab-bar {
   display: flex;
   background: #f6f6f6;
@@ -17,5 +15,6 @@ export default {};
   right: 0;
   bottom: 0;
   box-shadow: 0 -2px 1px #efefef;
+  overflow: hidden;
 }
 </style>
