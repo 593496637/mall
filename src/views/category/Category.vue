@@ -1,30 +1,34 @@
 <template>
-  <div class="wrapper" ref="wrapper">
+  <scroll class="wrapper">
     <ul class="content">
       <li v-for="item in 100" :key="item">{{item}}</li>
     </ul>
-  </div>
+  </scroll>
 </template>
 <script>
-import BScroll from "@better-scroll/core";
+// import BScroll from "@better-scroll/core";
+import Scroll from "components/common/scroll/Scroll";
 export default {
+  components: {
+    Scroll
+  },
   data() {
     return {
       scroll: null
     };
   },
   mounted() {
-    this.$nextTick(() => {
-      this.scroll = new BScroll(this.$refs.wrapper, {
-        probeType: 3
-      });
-    });
+    // this.$nextTick(() => {
+    //   this.scroll = new BScroll(this.$refs.wrapper, {
+    //     probeType: 3
+    //   });
+    // });
   }
 };
 </script>
 <style scoped>
 .wrapper {
-  height: 500px;
+  height: calc(100vh - 49px);
   overflow: hidden;
 }
 </style>

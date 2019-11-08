@@ -3,26 +3,23 @@
     <!-- 导航栏 -->
     <nav-bar class="home-nav">
       <template #center>
-        <div>
-          购物街
-        </div>
+        <div>购物街</div>
       </template>
     </nav-bar>
-    <scroll class="wrapper">
+    <scroll class="wrapper" :data="dataChange">
       <div class="content">
-      <!-- 轮播图 -->
-      <home-swiper :banners="banners.list"></home-swiper>
-      <!-- 导航菜单 -->
-      <recommend-view :recommends="recommends.list"></recommend-view>
-      <!-- 推荐菜单 -->
-      <feature></feature> 
-      <!-- 吸顶菜单 -->
-      <tab-control :titles="['流行','新款','精选']" class="tab-control" @tabClick="tabClick"></tab-control>
-      <!-- 商品 -->
-      <goods-list :goods="activeGoodsList"></goods-list>
+        <!-- 轮播图 -->
+        <home-swiper :banners="banners.list"></home-swiper>
+        <!-- 导航菜单 -->
+        <recommend-view :recommends="recommends.list"></recommend-view>
+        <!-- 推荐菜单 -->
+        <feature></feature>
+        <!-- 吸顶菜单 -->
+        <tab-control :titles="['流行','新款','精选']" class="tab-control" @tabClick="tabClick"></tab-control>
+        <!-- 商品 -->
+        <goods-list :goods="activeGoodsList"></goods-list>
       </div>
-      
-    </scroll>  
+    </scroll>
   </div>
 </template>
 <script>
@@ -57,7 +54,8 @@ export default {
         sell: { page: 0, list: [] }
       },
       clickList: ["pop", "new", "sell"],
-      activeIndex: 0
+      activeIndex: 0,
+      dataChange: 0
     };
   },
   created() {
@@ -79,6 +77,7 @@ export default {
       getHomeMultidata().then(res => {
         this.banners = res.data.banner;
         this.recommends = res.data.recommend;
+        this.change();
       });
     },
     // 获取商品列表
@@ -87,11 +86,16 @@ export default {
       getHomeGoods(type, page).then(res => {
         this.goodsList[type].list.push(...res.data.list);
         this.goodsList[type].page++;
+        this.change();
       });
     },
     // 吸顶菜单点击事件
     tabClick(index) {
       this.activeIndex = index;
+    },
+    change() {
+      this.dataChange++;
+      console.log(this.dataChange);
     }
   }
 };
@@ -101,7 +105,7 @@ export default {
 #home {
   padding: 44px 0 50px;
 }
-
+/* 第二种方式的定位布局 */
 /* #home {
   position: relative;
   height: 100vh;
@@ -122,10 +126,9 @@ export default {
 
 .wrapper {
   /* 第一种方式的局部高度 */
-  /* height: calc(100vh - 93px); */
-  height: 300px;
+  height: calc(100vh - 93px);
   overflow: hidden;
-  /* 第二种方式 */
+  /* 第二种方式的定位布局 */
   /* position: absolute;
   overflow: hidden;
   top: 44px;
