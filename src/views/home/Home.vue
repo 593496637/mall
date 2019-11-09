@@ -6,7 +6,15 @@
         <div>购物街</div>
       </template>
     </nav-bar>
-    <scroll class="wrapper" :data="dataChange">
+    <scroll class="wrapper" 
+      :data="dataChange" 
+      :probeType="probeType" 
+      :listenScroll="listenScroll" 
+      :pullup="pullup"
+      ref="scroll" 
+      @scroll="scroll"
+      @scrollToEnd="scrollToEnd"
+      >
       <div class="content">
         <!-- 轮播图 -->
         <home-swiper :banners="banners.list"></home-swiper>
@@ -20,6 +28,7 @@
         <goods-list :goods="activeGoodsList"></goods-list>
       </div>
     </scroll>
+    <back-top @click.native="backTop" v-show="isShowBackTop"/>
   </div>
 </template>
 <script>
@@ -29,6 +38,7 @@ import Feature from "./childComps/Feature";
 
 import NavBar from "components/common/navbar/NavBar";
 import Scroll from "components/common/scroll/Scroll";
+import BackTop from "components/common/backTop/BackTop";
 import TabControl from "components/content/tabControl/TabControl";
 import GoodsList from "components/content/goods/GoodsList";
 
@@ -42,7 +52,8 @@ export default {
     NavBar,
     TabControl,
     GoodsList,
-    Scroll
+    Scroll,
+    BackTop
   },
   data() {
     return {
@@ -55,7 +66,11 @@ export default {
       },
       clickList: ["pop", "new", "sell"],
       activeIndex: 0,
-      dataChange: 0
+      dataChange: 0,
+      listenScroll: true,
+      probeType: 3,
+      isShowBackTop: false,
+      pullup: true
     };
   },
   created() {
@@ -67,8 +82,9 @@ export default {
   computed: {
     // 展示被点击菜单的数据
     activeGoodsList() {
-      const active = this.clickList[this.activeIndex];
-      return this.goodsList[active].list;
+      this.change();
+      this.activeType = this.clickList[this.activeIndex];
+      return this.goodsList[this.activeType].list;
     }
   },
   methods: {
@@ -87,29 +103,45 @@ export default {
         this.goodsList[type].list.push(...res.data.list);
         this.goodsList[type].page++;
         this.change();
+        this.pullup=true;
+      }).catch(err=>{
+        this.pullup=true;
       });
     },
     // 吸顶菜单点击事件
     tabClick(index) {
       this.activeIndex = index;
     },
+    // 刷新监听页面高度
     change() {
       this.dataChange++;
-      console.log(this.dataChange);
+    },
+    // 返回顶部
+    backTop() {
+      this.$refs.scroll.scrollTo(0, 0, 300);
+    },
+    // 监听滚动
+    scroll(pos) {
+      this.isShowBackTop = pos.y < -1000 ? true : false;
+    },
+    // 滚动到底部
+    scrollToEnd() {
+      this.pullup=false;
+      this.getHomeGoodsList(this.activeType);
     }
   }
 };
 </script>
 <style scoped>
 /* 第一种方式的局部高度设置顶部距离 */
-#home {
-  padding: 44px 0 50px;
-}
-/* 第二种方式的定位布局 */
 /* #home {
+  padding: 44px 0 50px;
+} */
+/* 第二种方式的定位布局 */
+#home {
   position: relative;
   height: 100vh;
-} */
+}
 .home-nav {
   background: var(--color-tint);
   color: #fff;
@@ -126,14 +158,14 @@ export default {
 
 .wrapper {
   /* 第一种方式的局部高度 */
-  height: calc(100vh - 93px);
-  overflow: hidden;
+  /* height: calc(100vh - 93px);
+  overflow: hidden; */
   /* 第二种方式的定位布局 */
-  /* position: absolute;
+  position: absolute;
   overflow: hidden;
   top: 44px;
   left: 0;
   right: 0;
-  bottom: 50px; */
+  bottom: 50px;
 }
 </style>

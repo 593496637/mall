@@ -80,9 +80,7 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
-      this.scroll = new BScroll(this.$refs.wrapper, {
-        click: this.click
-      });
+      this._initScroll();
     });
   },
   methods: {
@@ -156,11 +154,9 @@ export default {
   watch: {
     // 监听数据的变化，延时refreshDelay时间后调用refresh方法重新计算，保证滚动效果正常
     data() {
-      setTimeout(() => {
-        this.$nextTick(() => {
-          this.refresh();
-        });
-      }, this.refreshDelay);
+      this.$nextTick(() => {
+        this.refresh();
+      });
     }
   }
 };
