@@ -23,7 +23,7 @@
         <!-- 推荐菜单 -->
         <feature></feature>
         <!-- 吸顶菜单 -->
-        <tab-control :titles="['流行','新款','精选']" class="tab-control" @tabClick="tabClick"></tab-control>
+        <tab-control :titles="['流行','新款','精选']" @tabClick="tabClick"></tab-control>
         <!-- 商品 -->
         <goods-list :goods="activeGoodsList"></goods-list>
       </div>
@@ -43,6 +43,7 @@ import TabControl from "components/content/tabControl/TabControl";
 import GoodsList from "components/content/goods/GoodsList";
 
 import { getHomeMultidata, getHomeGoods } from "network/home.js";
+import { debounce } from "common/utils.js";
 export default {
   name: "Home",
   components: {
@@ -79,6 +80,17 @@ export default {
     this.getHomeGoodsList("new");
     this.getHomeGoodsList("sell");
   },
+  mounted() {
+    // 调用防抖动函数
+    let debounceFn = debounce(content => {
+      console.log(content);
+      this.$refs.scroll.refresh();
+    }, 500);
+    // 监听图片加载完成 --事件总线
+    this.$bus.$on("imageLoadEnd", () => {
+      debounceFn("防抖了哦");
+    });
+  },
   computed: {
     // 展示被点击菜单的数据
     activeGoodsList() {
@@ -99,14 +111,16 @@ export default {
     // 获取商品列表
     getHomeGoodsList(type) {
       const page = this.goodsList[type].page + 1;
-      getHomeGoods(type, page).then(res => {
-        this.goodsList[type].list.push(...res.data.list);
-        this.goodsList[type].page++;
-        this.change();
-        this.pullup=true;
-      }).catch(err=>{
-        this.pullup=true;
-      });
+      getHomeGoods(type, page)
+        .then(res => {
+          this.goodsList[type].list.push(...res.data.list);
+          this.goodsList[type].page++;
+          this.change();
+          this.pullup = true;
+        })
+        .catch(err => {
+          this.pullup = true;
+        });
     },
     // 吸顶菜单点击事件
     tabClick(index) {
@@ -126,9 +140,12 @@ export default {
     },
     // 滚动到底部
     scrollToEnd() {
-      this.pullup=false;
+      this.pullup = false;
       this.getHomeGoodsList(this.activeType);
     }
+  },
+  beforeDestroy() {
+    this.$bus.$off("imageLoadEnd");
   }
 };
 </script>
@@ -142,6 +159,7 @@ export default {
   position: relative;
   height: 100vh;
 }
+
 .home-nav {
   background: var(--color-tint);
   color: #fff;
@@ -149,11 +167,6 @@ export default {
   top: 0;
   left: 0;
   z-index: 1;
-}
-
-.tab-control {
-  position: sticky;
-  top: 44px;
 }
 
 .wrapper {

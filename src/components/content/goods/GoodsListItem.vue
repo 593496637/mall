@@ -1,7 +1,7 @@
 <template>
   <div class="goods-item">
     <div class="img-box">
-      <img :src="goodsItem.show.img" alt="">
+      <img :src="goodsItem.show.img" alt="" @load="imageLoad">
     </div>
     <p class="title">{{goodsItem.title}}</p>
     <span class="price">￥{{goodsItem.price}}</span>
@@ -18,9 +18,12 @@ export default {
       }
     }
   },
-  created() {
-  },
-  methods: {}
+  created() {},
+  methods: {
+    imageLoad() {
+      this.$bus.$emit("imageLoadEnd");
+    }
+  }
 };
 </script>
 <style scoped>
@@ -44,15 +47,15 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.title{
+.title {
   padding: 5px 0;
 }
-.price{
+.price {
   color: red;
   margin-right: 20px;
   vertical-align: middle;
 }
-.collect{
-  vertical-align:middle;
+.collect {
+  vertical-align: middle;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div class="goods">
-    <goods-list-item v-for="item in goods" :key="item.iid" :goods-item="item" class="goods-item"></goods-list-item>
+    <goods-list-item v-for="item in goods" :key="item.iid+Math.random()" :goods-item="item" class="goods-item"></goods-list-item>
   </div>
 </template>
 <script>
@@ -26,6 +26,5 @@ export default {
 .goods-item {
   /* flex: 1; */
   width: 46%;
-  
 }
 </style>
