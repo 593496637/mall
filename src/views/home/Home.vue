@@ -6,6 +6,8 @@
         <div>购物街</div>
       </template>
     </nav-bar>
+    <!-- 吸顶菜单 -->
+    <tab-control :titles="['流行','新款','精选']" @tabClick="tabClick" ref="tabControl1" class="tab-control" v-show="isFixed"></tab-control>
     <scroll class="wrapper" 
       :data="dataChange" 
       :probeType="probeType" 
@@ -17,13 +19,13 @@
       >
       <div class="content">
         <!-- 轮播图 -->
-        <home-swiper :banners="banners.list"></home-swiper>
+        <home-swiper :banners="banners.list" @swiperImageLoad.once="imageLoad"></home-swiper>
         <!-- 导航菜单 -->
         <recommend-view :recommends="recommends.list"></recommend-view>
         <!-- 推荐菜单 -->
         <feature></feature>
         <!-- 吸顶菜单 -->
-        <tab-control :titles="['流行','新款','精选']" @tabClick="tabClick"></tab-control>
+        <tab-control :titles="['流行','新款','精选']" @tabClick="tabClick" ref="tabControl2"></tab-control>
         <!-- 商品 -->
         <goods-list :goods="activeGoodsList"></goods-list>
       </div>
@@ -71,7 +73,9 @@ export default {
       listenScroll: true,
       probeType: 3,
       isShowBackTop: false,
-      pullup: true
+      pullup: true,
+      isFixed: false,
+      taboffsetTop: 0
     };
   },
   created() {
@@ -125,6 +129,9 @@ export default {
     // 吸顶菜单点击事件
     tabClick(index) {
       this.activeIndex = index;
+      // 使吸顶菜单保持点击状态一致
+      this.$refs.tabControl1.currentIndex = index;
+      this.$refs.tabControl2.currentIndex = index;
     },
     // 刷新监听页面高度
     change() {
@@ -136,12 +143,20 @@ export default {
     },
     // 监听滚动
     scroll(pos) {
+      // 返回顶部是否显示
       this.isShowBackTop = pos.y < -1000 ? true : false;
+
+      // 决定controlTop是否吸顶
+      this.isFixed = -pos.y > this.taboffsetTop;
     },
     // 滚动到底部
     scrollToEnd() {
       this.pullup = false;
       this.getHomeGoodsList(this.activeType);
+    },
+    // 监听轮播图图片是否加载完毕
+    imageLoad() {
+      this.taboffsetTop = this.$refs.tabControl2.$el.offsetTop;
     }
   },
   beforeDestroy() {
@@ -163,10 +178,13 @@ export default {
 .home-nav {
   background: var(--color-tint);
   color: #fff;
-  position: fixed;
+  /* 原生导航的时候，使顶部不随页面一起滚动时需要fixed，但是下面内容用了better-scroll ，
+    则顶部导航就不需要进行定位了
+   */
+  /* position: fixed;
   top: 0;
   left: 0;
-  z-index: 1;
+  z-index: 1; */
 }
 
 .wrapper {
@@ -180,5 +198,9 @@ export default {
   left: 0;
   right: 0;
   bottom: 50px;
+}
+.tab-control {
+  position: relative;
+  z-index: 11;
 }
 </style>
